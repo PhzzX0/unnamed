@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="py-24 px-6 max-w-7xl mx-auto text-center">
+    <h2 class="text-4xl font-orbitron font-bold mb-12 text-primary">PARCEIROS</h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
+        {% for i in range(8) %}
+        <div class="bg-dark/40 border border-primary/20 p-6 rounded-xl hover:border-primary transition">
+            <img src="https://via.placeholder.com/200x100" class="mx-auto">
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

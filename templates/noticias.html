@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="py-24 px-6 max-w-6xl mx-auto">
+    <h2 class="text-4xl font-orbitron font-bold mb-12 text-primary">NOTÍCIAS</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {% for i in range(6) %}
+        <article class="bg-dark/50 border border-primary/20 p-6 rounded-xl hover:border-primary transition">
+            <img src="https://via.placeholder.com/600x300" class="rounded-lg mb-4">
+            <h3 class="text-2xl font-bold mb-2">Título da notícia {{ i + 1 }}</h3>
+            <p class="text-light/60 mb-3">
+                Uma pequena descrição da notícia para chamar atenção do leitor.
+            </p>
+            <a href="#" class="text-primary font-bold hover:text-primary/70">Ler mais →</a>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

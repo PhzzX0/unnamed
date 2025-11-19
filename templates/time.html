@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="py-24 px-6 max-w-7xl mx-auto">
+    <h2 class="text-4xl font-orbitron font-bold mb-12 text-primary">NOSSO TIME</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        {% for i in range(5) %}
+        <div class="bg-dark/50 border border-primary/20 rounded-xl overflow-hidden transform hover:scale-105 transition duration-500">
+            <div class="relative h-64 overflow-hidden">
+                <img src="https://mibr.gg/wp-content/uploads/2025/01/PlayerProfile_ValorantMisto_Aspas-copiar.jpg" alt="Player" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-4">
+                    <h3 class="text-2xl font-orbitron font-bold text-light">TESTE</h3>
+                    <p class="text-secondary">Player</p>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <span class="bg-primary/10 text-primary text-xs font-semibold px-2.5 py-0.5 rounded">Clash Royale</span>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="#" class="text-light hover:text-primary transition">
+                        <i data-feather="twitter" class="w-4 h-4"></i>
+                    </a>
+                    <a href="#" class="text-light hover:text-primary transition">
+                        <i data-feather="twitch" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

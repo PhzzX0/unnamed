@@ -8,11 +8,12 @@
                     </div>
                     <div class="hidden md:block ml-10">
                         <div class="flex space-x-4">
-                            <a href="#" class="text-primary px-3 py-2 rounded-md text-sm font-medium transition">INÍCIO</a>
-                            <a href="#team" class="text-light hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition">TIME</a>
-                            <a href="#merch" class="text-light hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition">LOJA</a>
-                            <a href="#sponsors" class="text-light hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition">PARCEIROS</a>
-                            <a href="#contact" class="text-light hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition">CONTATO</a>
+                            <a href="{{ url_for('home') }}" class="text-primary px-3 py-2 rounded-md text-sm font-medium transition">INÍCIO</a>
+                            <a href="{{ url_for('time') }}" class="text-light hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition">TIME</a>
+                            <a href="{{ url_for('loja') }}" class="text-light hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition">LOJA</a>
+                            <a href="{{ url_for('noticias') }}" class="text-light hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition">NOTICIAS</a>
+                            <a href="{{ url_for('agenda') }}" class="text-light hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition">AGENDA</a>
+                            <a href="{{ url_for('parceiros') }}" class="text-light hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition">PARCEIROS</a>
                         </div>
                     </div>
                 </div>
@@ -33,11 +34,10 @@
         <!-- Mobile menu -->
         <div id="mobile-menu" class="md:hidden hidden bg-dark/95 backdrop-blur-lg">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#" class="block text-primary px-3 py-2 rounded-md text-base font-medium">INÍCIO</a>
-                <a href="#team" class="block text-light hover:text-primary px-3 py-2 rounded-md text-base font-medium">TIME</a>
-                <a href="#merch" class="block text-light hover:text-primary px-3 py-2 rounded-md text-base font-medium">LOJA</a>
-                <a href="#sponsors" class="block text-light hover:text-primary px-3 py-2 rounded-md text-base font-medium">PARCEIROS</a>
-                <a href="#contact" class="block text-light hover:text-primary px-3 py-2 rounded-md text-base font-medium">CONTATO</a>
+                <a href="{{ url_for('home') }}" class="block text-primary px-3 py-2 rounded-md text-base font-medium">INÍCIO</a>
+                <a href="{{ url_for('time') }}" class="block text-light hover:text-primary px-3 py-2 rounded-md text-base font-medium">TIME</a>
+                <a href="{{ url_for('loja') }}" class="block text-light hover:text-primary px-3 py-2 rounded-md text-base font-medium">LOJA</a>
+                <a href="{{ url_for('parceiros') }}" class="block text-light hover:text-primary px-3 py-2 rounded-md text-base font-medium">PARCEIROS</a>
                 <button class="block w-full bg-primary hover:bg-primary/90 px-4 py-2 rounded-md text-base font-bold text-dark mt-2 flex items-center justify-center">
                     <i data-feather="shopping-bag" class="mr-2 w-4 h-4"></i> LOGIN
                 </button>
