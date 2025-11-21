@@ -31,11 +31,19 @@
                     </div>
                 </div>
             </div>
-            <!-- Login -->
+            <!-- Login / User -->
             <div class="hidden md:block">
-                <button class="text-primary hover:text-primary/70 px-4 py-2 rounded-md text-sm font-bold flex items-center">
-                    <i data-feather="user" class="mr-2 w-4 h-4"></i> LOGIN
-                </button>
+                {% if current_user %}
+                    <div class="flex items-center space-x-2">
+                        <i data-feather="user" class="text-primary w-4 h-4"></i>
+                        <span class="text-primary font-bold">Olá, {{ current_user.username }}</span>
+                        <a href="{{ url_for('logout') }}" class="text-light hover:text-primary ml-4 text-sm font-semibold">Sair</a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="text-primary hover:text-primary/70 px-4 py-2 rounded-md text-sm font-bold flex items-center">
+                        <i data-feather="user" class="mr-2 w-4 h-4"></i> LOGIN
+                    </a>
+                {% endif %}
             </div>
             <!-- Mobile button -->
             <div class="md:hidden">
@@ -67,6 +75,20 @@
             <a href="{{ url_for('parceiros') }}" class="block px-3 py-2 text-base {% if active_page == 'parceiros' %}text-primary font-bold{% else %}text-light hover:text-primary font-bold{% endif %}">
                 PARCEIROS
             </a>
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                {% if current_user %}
+                    <div class="block px-3 py-2 rounded-md text-base font-medium text-primary font-bold">
+                        Olá, {{ current_user.username }}
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-light hover:text-primary font-bold">
+                        Sair
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-light hover:text-primary font-bold">
+                        LOGIN
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </nav>
