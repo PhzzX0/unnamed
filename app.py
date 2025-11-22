@@ -444,16 +444,26 @@ def admin_add_match():
 @app.route('/admin/matches/edit/<int:match_id>', methods=['GET', 'POST'])
 @admin_required
 def admin_edit_match(match_id):
-    date_str = request.form['date']
-    time_str = request.form['time']
-    match = Match.query.get_or_404(match_id)
+    match = Match.query.get_or_404(match_id) 
+
     if request.method == 'POST':
-        match.tournament = request.form['tournament']
-        match.opponent = request.form['opponent']
-        date = request.form['date']
-        time = request.form['time']
-        date=datetime.datetime.strptime(date_str, '%Y-%m-%d').date(),
-        time=datetime.datetime.strptime(time_str, '%H:%M').time()
+        try:
+            date_str = request.form['date']
+            time_str = request.form['time']
+            tournament = request.form['tournament']
+            opponent = request.form['opponent']
+        except KeyError:
+            flash("Erro: Campos de torneio, oponente, data ou hora estão faltando.", "error")
+            return redirect(url_for('admin_edit_match', match_id=match_id))
+
+        match.tournament = tournament
+        match.opponent = opponent
+        try:
+            match.date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+            match.time = datetime.datetime.strptime(time_str, '%H:%M').time()
+        except ValueError:
+            flash("Erro: Formato de Data ou Hora inválido.", "error")
+            return redirect(url_for('admin_edit_match', match_id=match_id))
         db.session.commit()
         flash('Partida atualizada com sucesso!', 'success')
         return redirect(url_for('admin_matches'))
