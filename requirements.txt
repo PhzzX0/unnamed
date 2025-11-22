@@ -1,5 +1,4 @@
 flask
 flask_login
 werkzeug
-functools
 flask_sqlalchemy
