@@ -1,0 +1,10 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold text-primary mb-6">Editar Patrocinador</h2>
+<form action="{{ url_for('admin_edit_sponsor', sponsor_id=sponsor.id) }}" method="POST" class="space-y-4 max-w-lg">
+    <input type="text" name="name" value="{{ sponsor.name }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
+    <input type="text" name="logo_url" value="{{ sponsor.logo_url }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
+    <input type="text" name="website" value="{{ sponsor.website }}" class="w-full p-2 rounded bg-gray-800 text-light">
+    <button type="submit" class="bg-primary px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Atualizar</button>
+</form>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-primary">Agenda</h2>
+    <a href="{{ url_for('admin_add_match') }}" class="bg-primary text-dark px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Adicionar Partida</a>
+</div>
+
+<table class="w-full text-left border border-secondary rounded-lg overflow-hidden">
+    <thead class="bg-secondary text-light">
+        <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Torneio</th>
+            <th class="px-4 py-2">Oponente</th>
+            <th class="px-4 py-2">Data</th>
+            <th class="px-4 py-2">Hora</th>
+            <th class="px-4 py-2">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for m in matches %}
+        <tr class="border-t border-light/50">
+            <td class="px-4 py-2">{{ m.id }}</td>
+            <td class="px-4 py-2">{{ m.tournament }}</td>
+            <td class="px-4 py-2">{{ m.opponent }}</td>
+            <td class="px-4 py-2">{{ m.date }}</td>
+            <td class="px-4 py-2">{{ m.time }}</td>
+            <td class="px-4 py-2">
+                <a href="{{ url_for('admin_edit_match', match_id=m.id) }}" class="text-yellow-400 hover:text-yellow-300 mr-2">Editar</a>
+                <form action="{{ url_for('admin_delete_match', match_id=m.id) }}" method="POST" class="inline">
+                    <button type="submit" class="text-red-500 hover:text-red-400">Deletar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

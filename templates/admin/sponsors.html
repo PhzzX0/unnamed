@@ -1,0 +1,33 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-primary">Sponsors</h2>
+    <a href="{{ url_for('admin_add_sponsor') }}" class="bg-primary text-dark px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Adicionar Sponsor</a>
+</div>
+
+<table class="w-full text-left border border-secondary rounded-lg overflow-hidden">
+    <thead class="bg-secondary text-light">
+        <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Nome</th>
+            <th class="px-4 py-2">Website</th>
+            <th class="px-4 py-2">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in sponsors %}
+        <tr class="border-t border-light/50">
+            <td class="px-4 py-2">{{ s.id }}</td>
+            <td class="px-4 py-2">{{ s.name }}</td>
+            <td class="px-4 py-2">{{ s.website }}</td>
+            <td class="px-4 py-2">
+                <a href="{{ url_for('admin_edit_sponsor', sponsor_id=s.id) }}" class="text-yellow-400 hover:text-yellow-300 mr-2">Editar</a>
+                <form action="{{ url_for('admin_delete_sponsor', sponsor_id=s.id) }}" method="POST" class="inline">
+                    <button type="submit" class="text-red-500 hover:text-red-400">Deletar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<h2 class="text-4xl font-orbitron font-bold text-primary mb-8">Dashboard</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+
+    <!-- Players -->
+    <div class="bg-dark/90 border border-primary/40 rounded-xl p-6 shadow hover:shadow-xl transition flex flex-col items-center text-center">
+        <div class="text-5xl font-orbitron font-bold text-primary mb-2">{{ players_count }}</div>
+        <div class="text-light/70 mb-4 uppercase tracking-wider font-semibold">Players</div>
+        <a href="{{ url_for('admin_players') }}" class="bg-primary text-dark px-4 py-2 rounded-lg font-bold hover:bg-primary/90 transition">Gerenciar</a>
+    </div>
+
+    <!-- Matches -->
+    <div class="bg-dark/90 border border-primary/40 rounded-xl p-6 shadow hover:shadow-xl transition flex flex-col items-center text-center">
+        <div class="text-5xl font-orbitron font-bold text-primary mb-2">{{ matches_count }}</div>
+        <div class="text-light/70 mb-4 uppercase tracking-wider font-semibold">Partidas</div>
+        <a href="{{ url_for('admin_matches') }}" class="bg-primary text-dark px-4 py-2 rounded-lg font-bold hover:bg-primary/90 transition">Gerenciar</a>
+    </div>
+
+    <!-- Products -->
+    <div class="bg-dark/90 border border-primary/40 rounded-xl p-6 shadow hover:shadow-xl transition flex flex-col items-center text-center">
+        <div class="text-5xl font-orbitron font-bold text-primary mb-2">{{ products_count }}</div>
+        <div class="text-light/70 mb-4 uppercase tracking-wider font-semibold">Produtos</div>
+        <a href="{{ url_for('admin_products') }}" class="bg-primary text-dark px-4 py-2 rounded-lg font-bold hover:bg-primary/90 transition">Gerenciar</a>
+    </div>
+
+    <!-- News -->
+    <div class="bg-dark/90 border border-primary/40 rounded-xl p-6 shadow hover:shadow-xl transition flex flex-col items-center text-center">
+        <div class="text-5xl font-orbitron font-bold text-primary mb-2">{{ news_count }}</div>
+        <div class="text-light/70 mb-4 uppercase tracking-wider font-semibold">Notícias</div>
+        <a href="{{ url_for('admin_news') }}" class="bg-primary text-dark px-4 py-2 rounded-lg font-bold hover:bg-primary/90 transition">Gerenciar</a>
+    </div>
+
+    <!-- Sponsors -->
+    <div class="bg-dark/90 border border-primary/40 rounded-xl p-6 shadow hover:shadow-xl transition flex flex-col items-center text-center">
+        <div class="text-5xl font-orbitron font-bold text-primary mb-2">{{ sponsors_count }}</div>
+        <div class="text-light/70 mb-4 uppercase tracking-wider font-semibold">Sponsors</div>
+        <a href="{{ url_for('admin_sponsors') }}" class="bg-primary text-dark px-4 py-2 rounded-lg font-bold hover:bg-primary/90 transition">Gerenciar</a>
+    </div>
+
+</div>
+{% endblock %}

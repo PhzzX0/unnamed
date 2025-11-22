@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - SIIF</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Configuração local do Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rubik: ['Rubik', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#CE272A',
+                        secondary: '#781718',
+                        dark: '#0A0908',
+                        light: '#FBFEF9',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CSS extra -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-dark text-light font-rubik">
+
+    <!-- NAVBAR -->
+    <nav class="bg-dark border-b border-primary/40 px-6 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-orbitron font-bold text-primary">Painel Admin</h1>
+        <div class="flex items-center space-x-3">
+            <a href="{{ url_for('admin_dashboard') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Dashboard</a>
+            <a href="{{ url_for('admin_players') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Players</a>
+            <a href="{{ url_for('admin_matches') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Agenda</a>
+            <a href="{{ url_for('admin_products') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Produtos</a>
+            <a href="{{ url_for('admin_news') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Notícias</a>
+            <a href="{{ url_for('admin_sponsors') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Sponsors</a>
+            <a href="{{ url_for('home') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Voltar ao site</a>
+        </div>
+    </nav>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

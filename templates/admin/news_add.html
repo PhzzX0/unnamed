@@ -1,0 +1,11 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold text-primary mb-6">Adicionar Notícia</h2>
+<form action="{{ url_for('admin_add_news') }}" method="POST" class="space-y-4 max-w-lg">
+    <input type="text" name="title" placeholder="Título" class="w-full p-2 rounded bg-gray-800 text-light" required>
+    <textarea name="description" placeholder="Descrição" class="w-full p-2 rounded bg-gray-800 text-light" rows="4" required></textarea>
+    <input type="text" name="image_url" placeholder="URL da Imagem" class="w-full p-2 rounded bg-gray-800 text-light">
+    <input type="text" name="link" placeholder="Link" class="w-full p-2 rounded bg-gray-800 text-light">
+    <button type="submit" class="bg-primary px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Adicionar</button>
+</form>
+{% endblock %}

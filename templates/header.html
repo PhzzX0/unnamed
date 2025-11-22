@@ -24,8 +24,12 @@
             <div class="flex items-center space-x-4">
                 {% if current_user.is_authenticated %}
                     <span class="text-primary font-bold">Olá, {{ current_user.username }}</span>
-                    <a href="{{ url_for('logout') }}" class="hidden md:block px-3 py-2 text-base text-primary font-bold hover:text-primary/80">Sair</a>
 
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="px-3 py-2 text-primary font-bold hover:text-primary/80 transition">Dashboard</a>
+                    {% endif %}
+
+                    <a href="{{ url_for('logout') }}" class="hidden md:block px-3 py-2 text-base text-primary font-bold hover:text-primary/80">Sair</a>
                 {% else %}
                     <a href="{{ url_for('login') }}" class="text-primary hover:text-primary/70 px-4 py-2 rounded-md text-sm font-bold flex items-center">
                         <i data-feather="user" class="mr-2 w-4 h-4"></i> LOGIN

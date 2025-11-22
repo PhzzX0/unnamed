@@ -1,0 +1,19 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold text-primary mb-6">Editar Player</h2>
+<form action="{{ url_for('admin_edit_player', player_id=player.id) }}" method="POST" class="space-y-4 max-w-lg">
+    <input type="text" name="name" value="{{ player.name }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
+    <input type="text" name="role" value="{{ player.role }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
+    <input type="text" name="game" value="{{ player.game }}" class="w-full p-2 rounded bg-gray-800 text-light">
+    <input type="url" name="image_url" value="{{ player.image_url }}" class="w-full p-2 rounded bg-gray-800 text-light">
+    <div class="flex space-x-2">
+        <input type="url" name="twitter" value="{{ player.twitter }}" class="w-full p-2 rounded bg-gray-800 text-light">
+        <input type="url" name="instagram" value="{{ player.instagram }}" class="w-full p-2 rounded bg-gray-800 text-light">
+    </div>
+    <div class="flex space-x-2">
+        <input type="url" name="youtube" value="{{ player.youtube }}" class="w-full p-2 rounded bg-gray-800 text-light">
+        <input type="url" name="twitch" value="{{ player.twitch }}" class="w-full p-2 rounded bg-gray-800 text-light">
+    </div>
+    <button type="submit" class="bg-primary px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Atualizar</button>
+</form>
+{% endblock %}

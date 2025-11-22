@@ -1,0 +1,19 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold text-primary mb-6">Adicionar Player</h2>
+<form action="{{ url_for('admin_add_player') }}" method="POST" class="space-y-4 max-w-lg">
+    <input type="text" name="name" placeholder="Nome" class="w-full p-2 rounded bg-gray-800 text-light" required>
+    <input type="text" name="role" placeholder="Função" class="w-full p-2 rounded bg-gray-800 text-light" required>
+    <input type="text" name="game" placeholder="Game" class="w-full p-2 rounded bg-gray-800 text-light">
+    <input type="url" name="image_url" placeholder="URL da imagem" class="w-full p-2 rounded bg-gray-800 text-light">
+    <div class="flex space-x-2">
+        <input type="url" name="twitter" placeholder="Twitter" class="w-full p-2 rounded bg-gray-800 text-light">
+        <input type="url" name="instagram" placeholder="Instagram" class="w-full p-2 rounded bg-gray-800 text-light">
+    </div>
+    <div class="flex space-x-2">
+        <input type="url" name="youtube" placeholder="YouTube" class="w-full p-2 rounded bg-gray-800 text-light">
+        <input type="url" name="twitch" placeholder="Twitch" class="w-full p-2 rounded bg-gray-800 text-light">
+    </div>
+    <button type="submit" class="bg-primary px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Adicionar</button>
+</form>
+{% endblock %}

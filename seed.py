@@ -1,7 +1,7 @@
 from app import app
 from models import db, User, News, Player, Match, Product, Sponsor
 from datetime import datetime, date, time
-
+from werkzeug.security import generate_password_hash
 
 with app.app_context():
     print("Limpando tabelas…")
@@ -9,12 +9,21 @@ with app.app_context():
     db.create_all()
 
     # ===============================
-    # USERS (apenas exemplo)
+    # USERS (admin + exemplo)
     # ===============================
-    user = User(
+    admin_user = User(
         username="admin",
         email="admin@teste.com",
-        password_hash="123456"  # depois coloque hash
+        password_hash=generate_password_hash("123"),  # senha segura
+        is_admin=True
+    )
+    db.session.add(admin_user)
+
+    # Usuário comum de exemplo
+    user = User(
+        username="user",
+        email="user@teste.com",
+        password_hash=generate_password_hash("123456")
     )
     db.session.add(user)
 
@@ -56,7 +65,7 @@ with app.app_context():
     db.session.add_all(players)
 
     # ===============================
-    # MATCHES (Agenda)
+    # MATCHES
     # ===============================
     matches = [
         Match(
@@ -81,7 +90,7 @@ with app.app_context():
     db.session.add_all(matches)
 
     # ===============================
-    # PRODUCTS (Loja)
+    # PRODUCTS
     # ===============================
     products = [
         Product(name="Camiseta Oficial 2025", price=149.90, image_url="https://i.imgur.com/8tjHc0O.jpeg", tag="NOVO"),
@@ -94,7 +103,7 @@ with app.app_context():
     db.session.add_all(products)
 
     # ===============================
-    # SPONSORS (Parceiros)
+    # SPONSORS
     # ===============================
     sponsors = [
         Sponsor(name="Banco do Brasil", logo_url="https://tse2.mm.bing.net/th/id/OIP.Ix4T8bFRcCtMzDza7cbkgAHaHX?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", website="https://www.redbull.com"),

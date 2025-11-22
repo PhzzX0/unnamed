@@ -1,0 +1,35 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-primary">Produtos</h2>
+    <a href="{{ url_for('admin_add_product') }}" class="bg-primary text-dark px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Adicionar Produto</a>
+</div>
+
+<table class="w-full text-left border border-secondary rounded-lg overflow-hidden">
+    <thead class="bg-secondary text-light">
+        <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Nome</th>
+            <th class="px-4 py-2">Preço</th>
+            <th class="px-4 py-2">Tag</th>
+            <th class="px-4 py-2">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in products %}
+        <tr class="border-t border-light/50">
+            <td class="px-4 py-2">{{ p.id }}</td>
+            <td class="px-4 py-2">{{ p.name }}</td>
+            <td class="px-4 py-2">R$ {{ "%.2f"|format(p.price) }}</td>
+            <td class="px-4 py-2">{{ p.tag }}</td>
+            <td class="px-4 py-2">
+                <a href="{{ url_for('admin_edit_product', product_id=p.id) }}" class="text-yellow-400 hover:text-yellow-300 mr-2">Editar</a>
+                <form action="{{ url_for('admin_delete_product', product_id=p.id) }}" method="POST" class="inline">
+                    <button type="submit" class="text-red-500 hover:text-red-400">Deletar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
