@@ -53,11 +53,16 @@
                 <p class="text-light/60 mb-4 md:mb-0">
                     &copy; 2025 Nome Teste Esports. All rights reserved.
                 </p>
-                <div class="flex items-center space-x-6">
-                    <img src="https://tse2.mm.bing.net/th/id/OIP.Ix4T8bFRcCtMzDza7cbkgAHaHX?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Payment Method" class="h-8">
-                    <img src="https://enter.travel/portodegalinhas/wp-content/uploads/sites/2/2019/02/farmacia-porto-de-galinhas-pague-menos-logo.png" alt="Payment Method" class="h-8">
-                    <img src="https://images.seeklogo.com/logo-png/20/1/amd-logo-png_seeklogo-209670.png" alt="Payment Method" class="h-8">
-                </div>
+            <div class="flex items-center space-x-6">
+                {% if sponsors %}
+                    {% for sponsor in sponsors %}
+                    <img src="{{ url_for('static', filename='uploads/sponsors/' + sponsor.logo_file) }}" 
+                    alt="{{ sponsor.name }}" 
+                    class="h-8 object-contain">
+                    {% endfor %}
+                {% else %}
+                    <span class="text-light/50 text-sm">Nenhum patrocinador encontrado.</span>
+                {% endif %}
             </div>
         </div>
     </footer>

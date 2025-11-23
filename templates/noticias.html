@@ -6,32 +6,42 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
         {% for news_item in noticias %}
         <article x-data="{ open: false }" class="bg-dark/50 border border-primary/20 p-6 rounded-xl hover:border-primary transition">
-            {% if news_item.image_file %}
-            <img src="{{ url_for('static', filename='uploads/news/' + news_item.image_file) }}" 
-                class="rounded-lg mb-4">
-            {% else %}
-            <img src="https://via.placeholder.com/600x300" class="rounded-lg mb-4">
-            {% endif %}
+        {% if news_item.image_file %}
+        <img src="{{ url_for('static', filename='uploads/news/' + news_item.image_file) }}" 
+            class="rounded-lg mb-4">
+        {% else %}
+        <img src="https://via.placeholder.com/600x300" class="rounded-lg mb-4">
+        {% endif %}
         <h3 class="text-2xl font-orbitron font-bold text-primary mb-2">{{ news_item.title }}</h3>
         <p class="text-light/80 mb-3">
-            {{ news_item.description[:100] }}...
+        {{ news_item.description[:100] }}...
         </p>
         <button @click="open = true" class="text-primary font-bold hover:text-primary/80">Ler mais →</button>
-                <div x-show="open" x-transition class="fixed inset-0 bg-black/70 flex items-center justify-center z-50" style="display: none;">
-            <div @click.away="open = false" class="bg-dark/90 rounded-xl max-w-3xl w-full p-6 relative">
-            <button @click="open = false" class="absolute top-4 right-4 text-light hover:text-primary">
-                <i data-feather="x" class="w-5 h-5"></i>
-            </button>
-                        {% if news_item.image_file %}
-                        <img src="{{ url_for('static', filename='uploads/news/' + news_item.image_file) }}" 
-                            class="rounded-lg mb-4">
-                        {% else %}
-                        <img src="https://via.placeholder.com/600x300" class="rounded-lg mb-4">
-                        {% endif %}
-                        <h3 class="text-3xl font-bold text-primary mb-4">{{ news_item.title }}</h3>
-            <p class="text-light/80">{{ news_item.description }}</p>
+        
+        <div x-show="open" x-transition class="fixed inset-0 bg-black/70 flex items-center justify-center z-50" style="display: none;">
+            <div @click.away="open = false" class="bg-dark/90 rounded-xl max-w-3xl w-full p-6 relative max-h-[90vh] flex flex-col"> 
+                
+                <button @click="open = false" class="absolute top-4 right-4 text-light hover:text-primary z-10">
+                    <i data-feather="x" class="w-5 h-5"></i>
+                </button>
+                
+                <div class="pb-4">
+                    {% if news_item.image_file %}
+                    <img src="{{ url_for('static', filename='uploads/news/' + news_item.image_file) }}" 
+                        class="rounded-lg mb-4 w-full h-auto object-cover">
+                    {% else %}
+                    <img src="https://via.placeholder.com/600x300" class="rounded-lg mb-4 w-full h-auto object-cover">
+                    {% endif %}
+                    <h3 class="text-3xl font-bold text-primary mb-4">{{ news_item.title }}</h3>
+                </div>
+
+                <div class="overflow-y-auto overflow-x-hidden flex-grow pt-4 border-t border-primary/20"> 
+                    <p class="text-light/80 break-words">{{ news_item.description }}</p>
+                </div> 
+                
             </div>
         </div>
+
         </article>
         {% else %}
         <p class="text-light/60 col-span-2">Nenhuma notícia encontrada.</p>

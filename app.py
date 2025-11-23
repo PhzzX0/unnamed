@@ -42,6 +42,16 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"  # se tentar acessar rota protegida sem login
 
+# Injeta os patrocinadores globalmente
+@app.context_processor
+def inject_global_data():
+    try:
+        sponsors_list = Sponsor.query.all()
+    except:
+        sponsors_list = []
+        
+    return dict(sponsors=sponsors_list)
+
 # ============================================
 # ROTAS PRINCIPAIS DO SITE
 # ============================================
