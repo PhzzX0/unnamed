@@ -108,38 +108,44 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl lg:text-5xl font-orbitron font-bold mb-4">
-                    <span class="text-primary">MEET</span> <span class="text-secondary">THE SQUAD</span>
+                <span class="text-primary">MEET</span> <span class="text-secondary">THE SQUAD</span>
                 </h2>
                 <p class="max-w-2xl mx-auto text-light/80">
-                    Conheça nosso roaster preparado para dominar o competitivo.
+                Conheça nosso roaster preparado para dominar o competitivo.
                 </p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {% for p in players %}
-                    <div class="bg-dark/50 border border-primary/20 rounded-xl overflow-hidden transform hover:scale-105 transition duration-500">
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://mibr.gg/wp-content/uploads/2025/01/PlayerProfile_ValorantMisto_Aspas-copiar.jpg" alt="Player" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 p-4">
-                                <h3 class="text-2xl font-orbitron font-bold text-light">{{ p.name }}</h3>
-                                <p class="text-secondary">{{ p.role }}</p>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <div class="flex items-center mb-4">
-                                <span class="bg-primary/10 text-primary text-xs font-semibold px-2.5 py-0.5 rounded">{{ p.game }}</span>
-                            </div>
-                            <div class="flex space-x-3">
-                                {% if p.instagram %}<a href="{{ p.instagram }}" class="text-light hover:text-primary transition"><i data-feather="twitter" class="w-4 h-4"></i>{% endif %}
-                                </a>
-                                <!--
-                                <a href="#" class="text-light hover:text-primary transition">
-                                    <i data-feather="twitch" class="w-4 h-4"></i>
-                                </a> -->
-                            </div>
+                <div class="bg-dark/50 border border-primary/20 rounded-xl overflow-hidden transform hover:scale-105 transition duration-500">
+                    <div class="relative h-64 overflow-hidden">
+                        {% if p.image_file %}
+                        <img src="{{ url_for('static', filename='uploads/players/' + p.image_file) }}" 
+                            alt="{{ p.name }}" 
+                            class="w-full h-full object-cover">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='images/placeholder_player.jpg') }}" 
+                            alt="{{ p.name }} (Sem Imagem)" 
+                            class="w-full h-full object-cover">
+                        {% endif %}
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-4">
+                            <h3 class="text-2xl font-orbitron font-bold text-light">{{ p.name }}</h3>
+                            <p class="text-secondary">{{ p.role }}</p>
                         </div>
                     </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-primary/10 text-primary text-xs font-semibold px-2.5 py-0.5 rounded">{{ p.game }}</span>
+                        </div>
+                        <div class="flex space-x-3">
+                            {% if p.twitter %}<a href="{{ p.twitter }}" class="text-light hover:text-primary transition"><i data-feather="twitter" class="w-4 h-4"></i></a>{% endif %}
+                            {% if p.instagram %}<a href="{{ p.instagram }}" class="text-light hover:text-primary transition"><i data-feather="instagram" class="w-4 h-4"></i></a>{% endif %}
+                            {% if p.twitch %}<a href="{{ p.twitch }}" class="text-light hover:text-primary transition"><i data-feather="twitch" class="w-4 h-4"></i></a>{% endif %}
+                            {% if p.youtube %}<a href="{{ p.youtube }}" class="text-light hover:text-primary transition"><i data-feather="youtube" class="w-4 h-4"></i></a>{% endif %}
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
         </div>
@@ -191,51 +197,58 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl lg:text-5xl font-orbitron font-bold mb-4">
-                    <span class="text-primary">REP</span> <span class="text-secondary">THE BRAND</span>
+                <span class="text-primary">REP</span> <span class="text-secondary">THE BRAND</span>
                 </h2>
                 <p class="max-w-2xl mx-auto text-light/80">
-                    Merchandise oficial da NOME TESTE, vista-se como um campeão.
+                Merchandise oficial da NOME TESTE, vista-se como um campeão.
                 </p>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {% for p in products %}
-                    <div class="bg-dark/50 border border-primary/20 rounded-xl overflow-hidden transform hover:scale-105 transition duration-300">
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="http://static.photos/black/640x360/1" alt="Team Jersey" class="w-full h-full object-cover">
-                            <div class="absolute top-4 right-4">
-                                <span class="bg-primary text-dark text-xs font-bold px-2 py-1 rounded-full">NOVO</span>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-light mb-2">{{ p.name }}</h3>
-                            <div class="flex items-center mb-4">
-                                <div class="flex text-secondary">
-                                    <i data-feather="star" class="w-4 h-4 fill-current"></i>
-                                    <i data-feather="star" class="w-4 h-4 fill-current"></i>
-                                    <i data-feather="star" class="w-4 h-4 fill-current"></i>
-                                    <i data-feather="star" class="w-4 h-4 fill-current"></i>
-                                    <i data-feather="star" class="w-4 h-4 fill-current"></i>
-                                </div>
-                                <span class="text-xs text-light/60 ml-2">(24)</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-primary font-bold text-lg">R$ {{ "%.2f"|format(p.price) }}</span>
-                                <button class="bg-primary hover:bg-primary/90 text-dark font-bold py-2 px-4 rounded-full text-sm transition">
-                                    CARRINHO
-                                </button>
-                            </div>
-                        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for p in products[:4] %}
+            <div class="bg-dark/50 border border-primary/20 rounded-xl overflow-hidden transform hover:scale-105 transition duration-300">
+                <div class="relative h-64 overflow-hidden">
+                    {% if p.image_file %}
+                    <img src="{{ url_for('static', filename='uploads/products/' + p.image_file) }}" 
+                        alt="{{ p.name }}" 
+                        class="w-full h-full object-cover">
+                    {% else %}
+                    <img src="http://static.photos/black/640x360/1" alt="{{ p.name }}" class="w-full h-full object-cover">
+                    {% endif %}
+
+                    <div class="absolute top-4 right-4">
+                    {% if p.tag %}
+                        <span class="bg-primary text-dark text-xs font-bold px-2 py-1 rounded-full">{{ p.tag }}</span>
+                    {% endif %}
                     </div>
-                {% endfor %}
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-light mb-2">{{ p.name }}</h3>
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-secondary">
+                            {% for i in range(p.rating) %}
+                        <i data-feather="star" class="w-4 h-4 fill-current"></i>
+                            {% endfor %}
+                        </div>
+                        <span class="text-xs text-light/60 ml-2">({{ p.reviews or 0 }})</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-primary font-bold text-lg">R$ {{ "%.2f"|format(p.price) }}</span>
+                        <button class="bg-primary hover:bg-primary/90 text-dark font-bold py-2 px-4 rounded-full text-sm transition">
+                        CARRINHO
+                        </button>
+                    </div>
+                </div>
             </div>
-            
-            <div class="text-center mt-12">
-                <a href="{{ url_for('loja') }}" class="inline-flex items-center px-6 py-3 border border-primary text-primary font-bold rounded-full hover:bg-primary/10 transition">
-                    VER TODO MERCHANDISE
-                    <i data-feather="arrow-right" class="ml-2 w-5 h-5"></i>
-                </a>
-            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="{{ url_for('loja') }}" class="inline-flex items-center px-6 py-3 border border-primary text-primary font-bold rounded-full hover:bg-primary/10 transition">
+            VER TODO MERCHANDISE
+            <i data-feather="arrow-right" class="ml-2 w-5 h-5"></i>
+            </a>
+        </div>
         </div>
     </section>
 
@@ -284,21 +297,28 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl lg:text-5xl font-orbitron font-bold mb-4">
-                    <span class="text-primary">OUR</span> <span class="text-secondary">PARTNERS</span>
+                <span class="text-primary">OUR</span> <span class="text-secondary">PARTNERS</span>
                 </h2>
                 <p class="max-w-2xl mx-auto text-light/80">
-                    Nossas principais parcerias.
+                Nossas principais parcerias.
                 </p>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                 {% for s in sponsors %}
                 <div class="flex items-center justify-center p-4 bg-dark/50 border border-primary/20 rounded-lg h-24">
-                    <img src="{{ s.logo_url }}" alt="Sponsors" class="h-12 object-contain">
+                            {% if s.logo_file %}
+                <img src="{{ url_for('static', filename='uploads/sponsors/' + s.logo_file) }}" 
+                                alt="{{ s.name }}" 
+                                class="h-12 object-contain">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='images/placeholder_sponsor.png') }}" 
+                                alt="{{ s.name }} (Logo Missing)" 
+                                class="h-12 object-contain">
+                            {% endif %}
                 </div>
                 {% endfor %}
             </div>
-            
         </div>
     </section>
 

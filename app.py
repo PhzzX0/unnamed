@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, current_app
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
 from models import db, User, Player, Match, Product, Sponsor, Cart, CartItem, News
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -14,9 +14,10 @@ import secrets
 app = Flask(__name__)
 
 # Diretório de uploads
-UPLOAD_FOLDER = os.path.join('static', 'uploads', 'news')
+UPLOAD_ROOT = os.path.join('static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
+UPLOAD_FOLDER = UPLOAD_ROOT
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
@@ -238,27 +239,24 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def save_picture(form_picture):
+def save_picture(form_picture, subdirectory):
     """Salva a imagem no sistema de arquivos com um nome único."""
-    # 1. Gerar nome de arquivo único
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
-    
-    # 2. Definir o caminho completo de salvamento
-    # app.root_path é o diretório raiz do seu aplicativo (onde app.py está)
-    picture_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], picture_fn)
-    
-    # 3. Salvar o arquivo
-    form_picture.save(picture_path)
-    
-    # 4. Retornar o nome do arquivo para o banco de dados
-    return picture_fn
+    full_upload_folder = os.path.join(UPLOAD_ROOT, subdirectory)
 
-def delete_picture(filename):
+    os.makedirs(os.path.join(current_app.root_path, full_upload_folder), exist_ok=True)
+    picture_path = os.path.join(current_app.root_path, full_upload_folder, picture_fn)
+    form_picture.save(picture_path)
+
+    return picture_fn 
+
+def delete_picture(filename, subdirectory):
     """Deleta o arquivo de imagem do sistema de arquivos."""
     if filename:
-        picture_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
+        full_upload_folder = os.path.join(UPLOAD_ROOT, subdirectory)
+        picture_path = os.path.join(current_app.root_path, full_upload_folder, filename)
         if os.path.exists(picture_path):
             os.remove(picture_path)
 
@@ -282,7 +280,6 @@ def admin_players():
 @app.route('/admin/players/add', methods=['GET', 'POST'])
 @admin_required
 def admin_add_player():
-    from flask import request
     if request.method == 'POST':
         name = request.form['name']
         role = request.form['role']
@@ -291,7 +288,15 @@ def admin_add_player():
         instagram = request.form.get('instagram')
         youtube = request.form.get('youtube')
         twitch = request.form.get('twitch')
-        image_url = request.form.get('image_url')
+        filename = None
+        file = request.files.get('file')
+        
+        if file and file.filename != '':
+            if allowed_file(file.filename):
+                filename = save_picture(file, 'players')
+            else:
+                flash('Erro: Extensão de arquivo não permitida para a imagem do jogador.', 'danger')
+                return redirect(url_for('admin_add_player'))
 
         player = Player(
             name=name,
@@ -301,7 +306,7 @@ def admin_add_player():
             instagram=instagram,
             youtube=youtube,
             twitch=twitch,
-            image_url=image_url
+            image_file=filename
         )
         db.session.add(player)
         db.session.commit()
@@ -324,8 +329,16 @@ def admin_edit_player(player_id):
         player.instagram = request.form.get('instagram')
         player.youtube = request.form.get('youtube')
         player.twitch = request.form.get('twitch')
-        player.image_url = request.form.get('image_url')
-
+        file = request.files.get('file')
+        
+        if file and file.filename != '':
+            if allowed_file(file.filename):
+                delete_picture(player.image_file, 'players')
+                new_filename = save_picture(file, 'players')
+                player.image_file = new_filename
+            else:
+                flash('Erro: Extensão de arquivo não permitida! Imagem anterior mantida.', 'warning')
+        
         db.session.commit()
         flash("Player atualizado com sucesso!", "success")
         return redirect(url_for('admin_players'))
@@ -337,6 +350,7 @@ def admin_edit_player(player_id):
 @admin_required
 def admin_delete_player(player_id):
     player = Player.query.get_or_404(player_id)
+    delete_picture(player.image_file, 'players')
     db.session.delete(player)
     db.session.commit()
     flash(f"Player '{player.name}' deletado com sucesso!", "success")
@@ -361,9 +375,18 @@ def admin_add_product():
     if request.method == 'POST':
         name = request.form['name']
         price = float(request.form['price'])
-        image_url = request.form.get('image_url')
         tag = request.form.get('tag')
-        product = Product(name=name, price=price, image_url=image_url, tag=tag)
+        filename = None
+        file = request.files.get('file')
+        
+        if file and file.filename != '':
+            if allowed_file(file.filename):
+                filename = save_picture(file, 'products')
+            else:
+                flash('Erro: Extensão de arquivo não permitida para a imagem do produto.', 'danger')
+                return redirect(url_for('admin_add_product'))
+
+        product = Product(name=name, price=price, image_file=filename, tag=tag)
         db.session.add(product)
         db.session.commit()
         flash('Produto adicionado com sucesso!', 'success')
@@ -378,8 +401,17 @@ def admin_edit_product(product_id):
     if request.method == 'POST':
         product.name = request.form['name']
         product.price = float(request.form['price'])
-        product.image_url = request.form.get('image_url')
         product.tag = request.form.get('tag')
+        file = request.files.get('file')
+        
+        if file and file.filename != '':
+            if allowed_file(file.filename):
+                delete_picture(product.image_file, 'products')
+                new_filename = save_picture(file, 'products')
+                product.image_file = new_filename
+            else:
+                flash('Erro: Extensão de arquivo não permitida! Imagem anterior mantida.', 'warning')
+
         db.session.commit()
         flash('Produto atualizado com sucesso!', 'success')
         return redirect(url_for('admin_products'))
@@ -390,6 +422,7 @@ def admin_edit_product(product_id):
 @admin_required
 def admin_delete_product(product_id):
     product = Product.query.get_or_404(product_id)
+    delete_picture(product.image_file, 'products')
     db.session.delete(product)
     db.session.commit()
     flash('Produto deletado com sucesso!', 'success')
@@ -547,15 +580,27 @@ def admin_sponsors():
     sponsors = Sponsor.query.all()
     return render_template('admin/sponsors.html', sponsors=sponsors)
 
-# ADICIONAR SPONSOR
+# ADICIONAR SPONSOR 
 @app.route('/admin/sponsors/add', methods=['GET', 'POST'])
 @admin_required
 def admin_add_sponsor():
     if request.method == 'POST':
         name = request.form['name']
-        logo_url = request.form['logo_url']
         website = request.form.get('website')
-        sponsor = Sponsor(name=name, logo_url=logo_url, website=website)
+        filename = None
+        file = request.files.get('file')
+        
+        if 'file' not in request.files or request.files['file'].filename == '':
+            flash('Erro: O logo do patrocinador é obrigatório!', 'danger')
+            return redirect(url_for('admin_add_sponsor'))
+
+        if allowed_file(file.filename):
+            filename = save_picture(file, 'sponsors')
+        else:
+            flash('Erro: Extensão de arquivo não permitida para o logo.', 'danger')
+            return redirect(url_for('admin_add_sponsor'))
+
+        sponsor = Sponsor(name=name, logo_file=filename, website=website)
         db.session.add(sponsor)
         db.session.commit()
         flash('Parceiro adicionado com sucesso!', 'success')
@@ -569,8 +614,17 @@ def admin_edit_sponsor(sponsor_id):
     sponsor = Sponsor.query.get_or_404(sponsor_id)
     if request.method == 'POST':
         sponsor.name = request.form['name']
-        sponsor.logo_url = request.form['logo_url']
         sponsor.website = request.form.get('website')
+        file = request.files.get('file')
+        
+        if file and file.filename != '':
+            if allowed_file(file.filename):
+                delete_picture(sponsor.logo_file, 'sponsors')
+                new_filename = save_picture(file, 'sponsors')
+                sponsor.logo_file = new_filename
+            else:
+                flash('Erro: Extensão de arquivo não permitida! Logo anterior mantido.', 'warning')
+        
         db.session.commit()
         flash('Parceiro atualizado com sucesso!', 'success')
         return redirect(url_for('admin_sponsors'))
@@ -581,6 +635,7 @@ def admin_edit_sponsor(sponsor_id):
 @admin_required
 def admin_delete_sponsor(sponsor_id):
     sponsor = Sponsor.query.get_or_404(sponsor_id)
+    delete_picture(sponsor.logo_file, 'sponsors')
     db.session.delete(sponsor)
     db.session.commit()
     flash('Parceiro deletado com sucesso!', 'success')

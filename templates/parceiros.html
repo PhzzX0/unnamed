@@ -6,9 +6,17 @@
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
         {% for s in sponsors %}
-            <a href="{{ s.website }}" target="_blank" class="bg-dark/40 border border-primary/20 p-4 rounded-xl flex items-center justify-center hover:scale-105 transition">
-                <img src="{{ s.logo_url }}" class="w-32 object-contain opacity-80 hover:opacity-100 transition" />
-            </a>
+        <a href="{{ s.website }}" target="_blank" class="bg-dark/40 border border-primary/20 p-4 rounded-xl flex items-center justify-center hover:scale-105 transition">
+                            {% if s.logo_file %}
+                    <img src="{{ url_for('static', filename='uploads/sponsors/' + s.logo_file) }}" 
+                        alt="{{ s.name }}" 
+                        class="w-32 object-contain opacity-80 hover:opacity-100 transition" />
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/placeholder_sponsor.png') }}" 
+                        alt="{{ s.name }} (Logo Missing)" 
+                        class="w-32 object-contain opacity-80 hover:opacity-100 transition" />
+                    {% endif %}
+        </a>
         {% endfor %}
     </div>
 </section>

@@ -25,7 +25,7 @@ class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    image_file = db.Column(db.String(100), nullable=False)
+    image_file = db.Column(db.String(300), nullable=False)
     link = db.Column(db.String(300), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -38,7 +38,7 @@ class Player(db.Model):
     name = db.Column(db.String(80), nullable=False)
     role = db.Column(db.String(80), nullable=False)
     game = db.Column(db.String(60), nullable=True)
-    image_url = db.Column(db.String(300), nullable=True)
+    image_file = db.Column(db.String(300), nullable=False)
 
     twitter = db.Column(db.String(300))
     instagram = db.Column(db.String(300))
@@ -64,7 +64,7 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(140), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    image_url = db.Column(db.String(300), nullable=True)
+    image_file = db.Column(db.String(300), nullable=False)
     rating = db.Column(db.Integer, default=5)
     reviews = db.Column(db.Integer, default=0)
     tag = db.Column(db.String(50), nullable=True)  # "NOVO", "BEST SELLER"
@@ -93,5 +93,5 @@ class CartItem(db.Model):
 class Sponsor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(140), nullable=False)
-    logo_url = db.Column(db.String(300), nullable=False)
+    logo_file = db.Column(db.String(300), nullable=False)
     website = db.Column(db.String(300))

@@ -1,11 +1,14 @@
 {% extends 'admin/base.html' %}
 {% block content %}
 <h2 class="text-2xl font-bold text-primary mb-6">Adicionar Player</h2>
-<form action="{{ url_for('admin_add_player') }}" method="POST" class="space-y-4 max-w-lg">
+<form action="{{ url_for('admin_add_player') }}" method="POST" class="space-y-4 max-w-lg" enctype="multipart/form-data">
     <input type="text" name="name" placeholder="Nome" class="w-full p-2 rounded bg-gray-800 text-light" required>
     <input type="text" name="role" placeholder="Função" class="w-full p-2 rounded bg-gray-800 text-light" required>
     <input type="text" name="game" placeholder="Game" class="w-full p-2 rounded bg-gray-800 text-light">
-    <input type="url" name="image_url" placeholder="URL da imagem" class="w-full p-2 rounded bg-gray-800 text-light">
+    
+    <label for="image_file" class="block text-light">Upload da Imagem do Player:</label>
+    <input type="file" name="file" id="image_file" class="w-full p-2 rounded text-light" required>
+
     <div class="flex space-x-2">
         <input type="url" name="twitter" placeholder="Twitter" class="w-full p-2 rounded bg-gray-800 text-light">
         <input type="url" name="instagram" placeholder="Instagram" class="w-full p-2 rounded bg-gray-800 text-light">

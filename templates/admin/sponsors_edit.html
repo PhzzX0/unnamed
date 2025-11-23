@@ -1,10 +1,23 @@
 {% extends 'admin/base.html' %}
 {% block content %}
-<h2 class="text-2xl font-bold text-primary mb-6">Editar Patrocinador</h2>
-<form action="{{ url_for('admin_edit_sponsor', sponsor_id=sponsor.id) }}" method="POST" class="space-y-4 max-w-lg">
-    <input type="text" name="name" value="{{ sponsor.name }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
-    <input type="text" name="logo_url" value="{{ sponsor.logo_url }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
-    <input type="text" name="website" value="{{ sponsor.website }}" class="w-full p-2 rounded bg-gray-800 text-light">
-    <button type="submit" class="bg-primary px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Atualizar</button>
+<h2 class="text-2xl font-bold text-primary mb-6">Editar Parceiro/Patrocinador</h2>
+<form action="{{ url_for('admin_edit_sponsor', sponsor_id=sponsor.id) }}" method="POST" class="space-y-4 max-w-lg" enctype="multipart/form-data">
+    <input type="text" name="name" value="{{ sponsor.name }}" placeholder="Nome do Parceiro" class="w-full p-2 rounded bg-gray-800 text-light" required>
+    
+        <label class="block text-light">Logo Atual:</label>
+        {% if sponsor.logo_file %}
+        <img src="{{ url_for('static', filename='uploads/sponsors/' + sponsor.logo_file) }}" 
+            alt="Logo Atual do Parceiro" 
+            class="max-h-24 w-auto rounded-lg mb-2 border border-gray-700">
+        {% else %}
+        <p class="text-gray-400">Nenhum logo atual salvo.</p>
+        {% endif %}
+
+        <label for="logo_file" class="block text-light">Substituir Logo (opcional):</label>
+    <input type="file" name="file" id="logo_file" class="w-full p-2 rounded text-light">
+
+    <input type="url" name="website" value="{{ sponsor.website or '' }}" placeholder="Link do Site (Opcional)" class="w-full p-2 rounded bg-gray-800 text-light">
+
+    <button type="submit" class="bg-primary px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Atualizar Parceiro</button>
 </form>
 {% endblock %}

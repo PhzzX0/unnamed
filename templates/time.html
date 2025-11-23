@@ -7,27 +7,35 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {% for p in players %}
         <div class="bg-dark/50 border border-primary/20 rounded-xl overflow-hidden transform hover:scale-105 transition duration-500">
-            <div class="relative h-64 overflow-hidden">
-                <img src="https://mibr.gg/wp-content/uploads/2025/01/PlayerProfile_ValorantMisto_Aspas-copiar.jpg" alt="Player" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent"></div>
-                <div class="absolute bottom-0 left-0 p-4">
-                    <h3 class="text-2xl font-orbitron font-bold text-light">{{ p.name }}</h3>
-                    <p class="text-secondary">{{ p.role }}</p>
-                </div>
+        <div class="relative h-64 overflow-hidden">
+                    {% if p.image_file %}
+            <img src="{{ url_for('static', filename='uploads/players/' + p.image_file) }}" 
+                        alt="{{ p.name }}" 
+                        class="w-full h-full object-cover">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/placeholder_player.jpg') }}" 
+                        alt="{{ p.name }} (Sem Imagem)" 
+                        class="w-full h-full object-cover">
+                    {% endif %}
+                    
+            <div class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-4">
+            <h3 class="text-2xl font-orbitron font-bold text-light">{{ p.name }}</h3>
+            <p class="text-secondary">{{ p.role }}</p>
             </div>
-            <div class="p-6">
-                <div class="flex items-center mb-4">
-                    <span class="bg-primary/10 text-primary text-xs font-semibold px-2.5 py-0.5 rounded">{{ p.game }}</span>
-                </div>
-                <div class="flex space-x-3">
-                    {% if p.instagram %}<a href="{{ p.instagram }}" class="text-light hover:text-primary transition"><i data-feather="twitter" class="w-4 h-4"></i>{% endif %}
-                    </a>
-                    <!--
-                    <a href="#" class="text-light hover:text-primary transition">
-                        <i data-feather="twitch" class="w-4 h-4"></i>
-                    </a> -->
-                </div>
+        </div>
+        <div class="p-6">
+            <div class="flex items-center mb-4">
+            <span class="bg-primary/10 text-primary text-xs font-semibold px-2.5 py-0.5 rounded">{{ p.game }}</span>
             </div>
+            <div class="flex space-x-3">
+                        {% if p.twitter %}<a href="{{ p.twitter }}" class="text-light hover:text-primary transition"><i data-feather="twitter" class="w-4 h-4"></i></a>{% endif %}
+                        {% if p.instagram %}<a href="{{ p.instagram }}" class="text-light hover:text-primary transition"><i data-feather="instagram" class="w-4 h-4"></i></a>{% endif %}
+                        {% if p.twitch %}<a href="{{ p.twitch }}" class="text-light hover:text-primary transition"><i data-feather="twitch" class="w-4 h-4"></i></a>{% endif %}
+                        {% if p.youtube %}<a href="{{ p.youtube }}" class="text-light hover:text-primary transition"><i data-feather="youtube" class="w-4 h-4"></i></a>{% endif %}
+
+            </div>
+        </div>
         </div>
         {% endfor %}
     </div>

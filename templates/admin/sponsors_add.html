@@ -1,10 +1,14 @@
 {% extends 'admin/base.html' %}
 {% block content %}
-<h2 class="text-2xl font-bold text-primary mb-6">Adicionar Patrocinador</h2>
-<form action="{{ url_for('admin_add_sponsor') }}" method="POST" class="space-y-4 max-w-lg">
-    <input type="text" name="name" placeholder="Nome" class="w-full p-2 rounded bg-gray-800 text-light" required>
-    <input type="text" name="logo_url" placeholder="URL do Logo" class="w-full p-2 rounded bg-gray-800 text-light" required>
-    <input type="text" name="website" placeholder="Website" class="w-full p-2 rounded bg-gray-800 text-light">
-    <button type="submit" class="bg-primary px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Adicionar</button>
+<h2 class="text-2xl font-bold text-primary mb-6">Adicionar Parceiro/Patrocinador</h2>
+<form action="{{ url_for('admin_add_sponsor') }}" method="POST" class="space-y-4 max-w-lg" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="Nome do Parceiro" class="w-full p-2 rounded bg-gray-800 text-light" required>
+    
+        <label for="logo_file" class="block text-light">Upload do Logo do Parceiro:</label>
+    <input type="file" name="file" id="logo_file" class="w-full p-2 rounded text-light" required>
+
+    <input type="url" name="website" placeholder="Link do Site (Opcional)" class="w-full p-2 rounded bg-gray-800 text-light">
+
+    <button type="submit" class="bg-primary px-4 py-2 rounded-lg font-bold hover:bg-primary/90">Adicionar Parceiro</button>
 </form>
 {% endblock %}
