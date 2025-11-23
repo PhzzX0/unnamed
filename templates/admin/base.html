@@ -4,50 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Configuração local do Tailwind -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+        
+        <script src="https://unpkg.com/feather-icons"></script>
+        
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        orbitron: ['Orbitron', 'sans-serif'],
-                        rubik: ['Rubik', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#CE272A',
-                        secondary: '#781718',
-                        dark: '#0A0908',
-                        light: '#FBFEF9',
-                    }
-                }
+        theme: {
+            extend: {
+            fontFamily: {
+                orbitron: ['Orbitron', 'sans-serif'],
+                rubik: ['Rubik', 'sans-serif'],
+            },
+            colors: {
+                primary: '#CE272A',
+                secondary: '#781718',
+                dark: '#0A0908',
+                light: '#FBFEF9',
+            }
             }
         }
+        }
     </script>
-
-    <!-- CSS extra -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="bg-dark text-light font-rubik">
+<body class="bg-dark text-light font-rubik" x-data="{ isMenuOpen: false }" @resize.window="if (window.innerWidth >= 1024) isMenuOpen = false">
 
-    <!-- NAVBAR -->
     <nav class="bg-dark border-b border-primary/40 px-6 py-4 flex justify-between items-center">
-        <h1 class="text-2xl font-orbitron font-bold text-primary">Painel Admin</h1>
-        <div class="flex items-center space-x-3">
-            <a href="{{ url_for('admin_dashboard') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Dashboard</a>
-            <a href="{{ url_for('admin_players') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Players</a>
-            <a href="{{ url_for('admin_matches') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Agenda</a>
-            <a href="{{ url_for('admin_products') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Produtos</a>
-            <a href="{{ url_for('admin_news') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Notícias</a>
-            <a href="{{ url_for('admin_sponsors') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Patrocinadores</a>
-            <a href="{{ url_for('home') }}" class="px-3 py-2 rounded hover:bg-primary/20 transition">Voltar ao site</a>
-        </div>
+    <h1 class="text-2xl font-orbitron font-bold text-primary">Painel Admin</h1>
+    
+        <button @click="isMenuOpen = !isMenuOpen" class="lg:hidden text-light p-2 rounded hover:bg-primary/20 transition">
+            <template x-if="!isMenuOpen">
+                <i data-feather="menu" class="w-6 h-6"></i>
+            </template>
+            <template x-if="isMenuOpen">
+                <i data-feather="x" class="w-6 h-6"></i>
+            </template>
+        </button>
+
+            <div :class="{ 'block': isMenuOpen, 'hidden': !isMenuOpen }" 
+            class="absolute lg:static top-16 left-0 w-full lg:w-auto bg-dark lg:bg-transparent shadow-lg lg:shadow-none p-4 lg:p-0 z-50 
+                    lg:flex items-center space-y-2 lg:space-y-0 lg:space-x-3 flex-col lg:flex-row border-t lg:border-t-0 border-primary/40">
+            
+    <a href="{{ url_for('admin_dashboard') }}" class="w-full lg:w-auto text-center px-3 py-2 rounded hover:bg-primary/20 transition">Dashboard</a>
+    <a href="{{ url_for('admin_players') }}" class="w-full lg:w-auto text-center px-3 py-2 rounded hover:bg-primary/20 transition">Players</a>
+    <a href="{{ url_for('admin_matches') }}" class="w-full lg:w-auto text-center px-3 py-2 rounded hover:bg-primary/20 transition">Agenda</a>
+    <a href="{{ url_for('admin_products') }}" class="w-full lg:w-auto text-center px-3 py-2 rounded hover:bg-primary/20 transition">Produtos</a>
+    <a href="{{ url_for('admin_news') }}" class="w-full lg:w-auto text-center px-3 py-2 rounded hover:bg-primary/20 transition">Notícias</a>
+    <a href="{{ url_for('admin_sponsors') }}" class="w-full lg:w-auto text-center px-3 py-2 rounded hover:bg-primary/20 transition">Patrocinadores</a>
+        <hr class="border-primary/40 lg:hidden"> 
+    <a href="{{ url_for('home') }}" class="w-full lg:w-auto text-center px-3 py-2 rounded bg-secondary/50 hover:bg-secondary transition mt-2 lg:mt-0">Voltar ao site</a>
+    </div>
     </nav>
 
-{% block content %}{% endblock %}
+    <main class="p-4 md:p-6 lg:p-8">
+        {% block content %}{% endblock %}
+    </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
 </body>
 </html>
