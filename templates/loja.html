@@ -59,18 +59,19 @@
             <button @click="modalOpen = false" class="absolute top-4 right-4 text-light hover:text-primary">
                 <i data-feather="x" class="w-6 h-6"></i>
             </button>
-                        <img :src="product.image_url" class="w-full h-64 object-cover rounded-lg mb-4">
+            <img :src="product.image_url" class="w-full h-64 object-cover rounded-lg mb-4">
             <h3 class="text-2xl font-bold text-light mb-2" x-text="product.name"></h3>
             <p class="text-light/80 mb-4" x-text="product.description"></p>
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-primary font-bold text-lg" x-text="'R$ ' + product.price.toFixed(2)"></span>
-                <button @click="
-                fetch('/add-to-cart/' + product.id, { method: 'POST' })
-                .then(() => window.location.href='/carrinho')
-                " class="bg-primary hover:bg-primary/90 text-dark font-bold py-2 px-4 rounded-full text-sm transition">
-                ADICIONAR AO CARRINHO
-                </button>
-            </div>
+            <form method="POST" :action="'{{ url_for('add_to_cart', product_id=0) }}'.replace('0', product.id)">
+                <div class="flex justify-between items-center mt-4">
+                    <span class="text-primary font-bold text-xl" x-text="'R$ ' + product.price.toFixed(2)"></span>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
+                    <button type="submit" 
+                            class="bg-primary hover:bg-primary/90 text-dark font-bold py-2 px-4 rounded-full text-sm transition">
+                        ADICIONAR AO CARRINHO
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </section>

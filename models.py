@@ -95,3 +95,16 @@ class Sponsor(db.Model):
     name = db.Column(db.String(140), nullable=False)
     logo_file = db.Column(db.String(300), nullable=False)
     website = db.Column(db.String(300))
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    address = db.Column(db.String(200), nullable=False)
+    city = db.Column(db.String(100), nullable=False)
+    zip_code = db.Column(db.String(10), nullable=False)
+    payment_method = db.Column(db.String(50), nullable=False)
+    total = db.Column(db.Float, nullable=False)
+    items = db.Column(db.JSON, nullable=False)  # Lista de itens como JSON
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

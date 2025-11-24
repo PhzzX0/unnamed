@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, current_app
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, current_app, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
-from models import db, User, Player, Match, Product, Sponsor, Cart, CartItem, News
+from models import db, User, Player, Match, Product, Sponsor, Cart, CartItem, News, Order
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
 import os
 import datetime
 import secrets
+from flask_wtf.csrf import CSRFProtect 
+# ----------------------------------------------------
 
 # ============================================
 # CONFIGURAÇÃO DA APLICAÇÃO
@@ -27,6 +29,8 @@ db_path = os.path.join(app_dir, "instance", "site.db")
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "uma_chave_secreta_super_segura"
+
+csrf = CSRFProtect(app)
 
 # Inicializa o banco
 db.init_app(app)
@@ -654,6 +658,19 @@ def admin_delete_sponsor(sponsor_id):
 
 
 # ==========================================
+# FUNÇÕES AUXILIARES PARA CÁLCULO
+# ==========================================
+def calculate_cart_total(cart):
+    """Calcula o preço total do carrinho, somando (preço * quantidade) de cada item."""
+    total = 0.0
+    if cart and cart.items:
+        for item in cart.items:
+            if item.product:
+                total += float(item.product.price) * item.quantity
+    return total
+
+
+# ==========================================
 # ROTAS DO CARRINHO
 # ==========================================
 @app.route('/add-to-cart/<int:product_id>', methods=['POST'])
@@ -661,17 +678,13 @@ def admin_delete_sponsor(sponsor_id):
 def add_to_cart(product_id):
     from models import Product, Cart, CartItem
 
-    # Pega o produto ou retorna 404
     product = Product.query.get_or_404(product_id)
-
-    # Pega ou cria o carrinho do usuário logado
     cart = Cart.query.filter_by(user_id=current_user.id).first()
     if not cart:
         cart = Cart(user_id=current_user.id)
         db.session.add(cart)
         db.session.commit()
 
-    # Verifica se o item já está no carrinho
     cart_item = CartItem.query.filter_by(cart_id=cart.id, product_id=product.id).first()
     if cart_item:
         cart_item.quantity += 1
@@ -687,18 +700,165 @@ def add_to_cart(product_id):
 @login_required
 def carrinho():
     from models import Cart
-
-    # Pega o carrinho do usuário
     cart = Cart.query.filter_by(user_id=current_user.id).first()
     
-    # Se não existir carrinho, cria vazio (opcional)
     if not cart:
         cart = Cart(user_id=current_user.id)
         db.session.add(cart)
         db.session.commit()
-
+    cart.total_price = calculate_cart_total(cart)
     return render_template('carrinho.html', cart=cart)
 
+@app.route('/update-cart-quantity/<int:product_id>', methods=['POST'])
+@login_required
+def update_cart_quantity(product_id):
+    try:
+        new_quantity = int(request.form.get('quantity', 1))
+        print(f"Atualizando quantity para produto {product_id}: {new_quantity}")  # Log
+    except ValueError:
+        flash("Quantidade inválida fornecida.", "danger")
+        return redirect(url_for('carrinho'))
+
+    cart = Cart.query.filter_by(user_id=current_user.id).first()
+    if cart:
+        cart_item = CartItem.query.filter_by(cart_id=cart.id, product_id=product_id).first()
+        if cart_item:
+            if new_quantity <= 0:
+                db.session.delete(cart_item)
+                flash(f"{cart_item.product.name} removido do carrinho.", "warning")
+            else:
+                cart_item.quantity = new_quantity
+                flash(f"Quantidade de {cart_item.product.name} atualizada para {new_quantity}.", "info")
+            db.session.commit()
+            print(f"Quantity atualizada com sucesso para {new_quantity}")  # Log
+    return redirect(url_for('carrinho'))
+
+@app.route('/remove-from-cart/<int:product_id>', methods=['POST'])
+@login_required
+def remove_from_cart(product_id):
+    """Remove um item específico do carrinho."""
+    from models import Cart, CartItem
+    
+    cart = Cart.query.filter_by(user_id=current_user.id).first()
+    
+    if cart:
+        cart_item = CartItem.query.filter_by(cart_id=cart.id, product_id=product_id).first()
+        if cart_item:
+            db.session.delete(cart_item)
+            db.session.commit()
+            flash("Item removido do carrinho.", "warning")
+            
+    return redirect(url_for('carrinho'))
+
+@app.route('/api/cart')
+@login_required
+def api_cart():
+    """
+    Retorna os itens do carrinho do usuário logado em formato JSON, 
+    incluindo o total recalculado.
+    """
+    from models import Cart
+    
+    cart = Cart.query.filter_by(user_id=current_user.id).first()
+    total = calculate_cart_total(cart)
+
+    if not cart or not cart.items:
+        return jsonify({'items': [], 'total': 0.0})
+    
+    cart_data = []
+
+    for item in cart.items:
+        if item.product:
+            image_url = url_for('static', filename=f'uploads/products/{item.product.image_file}') if item.product.image_file else 'https://placehold.co/64x64/1a1a2e/f0f0f0?text=PRODUTO'
+            
+            cart_data.append({
+                'id': item.product_id,
+                'name': item.product.name,
+                'price': float(item.product.price),
+                'quantity': item.quantity,
+                'image_url': image_url
+            })
+            
+    return jsonify({
+        'items': cart_data,
+        'total': total
+    })
+
+@app.route('/checkout', methods=['GET', 'POST'])
+@login_required
+def checkout():
+    cart = Cart.query.filter_by(user_id=current_user.id).first()
+    if not cart or not cart.items:
+        flash("Seu carrinho está vazio.", "warning")
+        return redirect(url_for('carrinho'))
+    
+    # Calcule e atribua total_price ao cart (para o template acessar)
+    cart.total_price = calculate_cart_total(cart)
+    
+    if request.method == 'POST':
+        # Colete dados do formulário
+        name = request.form.get('name')
+        email = request.form.get('email')
+        address = request.form.get('address')
+        city = request.form.get('city')
+        zip_code = request.form.get('zip_code')
+        payment_method = request.form.get('payment_method')
+        coupon = request.form.get('coupon', '').upper()
+        
+        # Aplique desconto simples (ex.: DESCONTO10 para 10% off)
+        discount = 0.0
+        total = cart.total_price  # Use o total calculado
+        if coupon == 'DESCONTO10':
+            discount = total * 0.1
+            total -= discount
+            flash(f"Cupom aplicado! Desconto de R$ {discount:.2f}.", "success")
+        elif coupon:
+            flash("Cupom inválido.", "error")
+            return redirect(url_for('checkout'))
+        
+        # Simule processamento de pagamento (sempre "sucesso" para teste)
+        if payment_method not in ['pix', 'credit_card', 'boleto']:
+            flash("Método de pagamento inválido.", "error")
+            return redirect(url_for('checkout'))
+        
+        # Salve o pedido (crie a tabela Order se necessário)
+        order = Order(
+            user_id=current_user.id,
+            name=name,
+            email=email,
+            address=address,
+            city=city,
+            zip_code=zip_code,
+            payment_method=payment_method,
+            total=total,
+            items=[{'name': item.product.name, 'quantity': item.quantity, 'price': item.product.price} for item in cart.items]  # Salve como JSON
+        )
+        db.session.add(order)
+        db.session.commit()
+        
+        # Limpe o carrinho
+        for item in cart.items:
+            db.session.delete(item)
+        db.session.commit()
+        
+        # Salve detalhes na session para a página de confirmação
+        session['order_details'] = {
+            'order_id': order.id,
+            'total': total,
+            'items': order.items,
+            'email': email
+        }
+        
+        flash("Pedido processado com sucesso!", "success")
+        print(f"Pedido {order.id} processado para usuário {current_user.id}")  # Log
+        return redirect(url_for('confirmation'))
+    
+    return render_template('checkout.html', cart=cart)
+
+@app.route('/confirmation')
+@login_required
+def confirmation():
+    return render_template('confirmation.html')
 
 # ============================================
 # MAIN

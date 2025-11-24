@@ -1,37 +1,204 @@
 {% extends 'base.html' %}
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<!-- Carregamento do Alpine.js (assumindo que está no base.html ou carregado globalmente) -->
+<script>
+    // Função utilitária para prevenir o uso de alert/confirm
+    function showCustomAlert(message) {
+        console.warn("ALERTA DESATIVADO: " + message);
+        // Em um app real, você implementaria um modal visual aqui.
+    }
+    // Sobrescrevendo a função confirm (melhor prática em ambientes iframed)
+    window.confirm = (message) => {
+        showCustomAlert(message);
+        return true; // Assume 'Yes' to allow form submission to proceed
+    };
+</script>
 
-<section class="py-24 px-6 max-w-7xl mx-auto">
-    <h2 class="text-4xl font-orbitron font-bold mb-12 text-primary">MEU CARRINHO</h2>
+<!-- Variável para controlar o modal de confirmação de remoção e o total do carrinho -->
+<div x-data="{ 
+    showRemoveModal: false, 
+    productIdToRemove: null, 
+    // Nota: O total é recalculado no servidor a cada submissão, mas é bom ter o subtotal do item reativo
+    removeItem(productId) {
+        this.productIdToRemove = productId;
+        this.showRemoveModal = true;
+    },
+    confirmRemove() {
+        // Submete o formulário de remoção
+        const form = document.getElementById('remove-form-' + this.productIdToRemove);
+        if (form) {
+            form.submit();
+        }
+        this.showRemoveModal = false;
+    }
+}">
 
-    {% if cart and cart.items %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {% for item in cart.items %}
-        <div class="bg-dark/50 border border-primary/20 rounded-xl p-6 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <img src="{{ item.product.image_url or 'https://via.placeholder.com/100' }}" class="w-20 h-20 object-cover rounded-lg">
-                <div>
-                    <h3 class="text-xl text-light font-bold">{{ item.product.name }}</h3>
-                    <p class="text-light/70">Quantidade: {{ item.quantity }}</p>
-                    <p class="text-primary font-bold">R$ {{ "%.2f"|format(item.product.price * item.quantity) }}</p>
+    <section class="py-16 md:py-24 px-4 sm:px-6 max-w-7xl mx-auto">
+        <h2 class="text-4xl font-orbitron font-bold mb-10 text-primary border-b border-primary/20 pb-4">MEU CARRINHO DE COMPRAS</h2>
+
+        {% if cart and cart.items %}
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            
+            <!-- COLUNA PRINCIPAL: ITENS DO CARRINHO -->
+            <div class="lg:col-span-2 space-y-6">
+                {% for item in cart.items %}
+                <div 
+                    x-data='{
+                            id: {{ item.product.id }},
+                            quantity: {{ item.quantity }},
+                            price: {{ item.product.price }},
+                            submitUpdate() {
+                                console.log("submitUpdate chamado com quantity:", this.quantity);
+                                const form = document.getElementById("update-form-" + this.id);
+                                if (form) {
+                                    const quantityInput = form.querySelector("input[name=\"quantity\"]");
+                                    console.log("Valor do input antes de definir:", quantityInput.value);
+                                    quantityInput.value = this.quantity;
+                                    console.log("Valor do input após definir:", quantityInput.value);
+                                    form.submit();
+                                }
+                            }
+                        }'
+
+                        class="bg-dark/50 border border-primary/20 rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-lg transition duration-300 hover:border-secondary">
+                        
+                    <div class="flex items-start gap-4 flex-grow w-full sm:w-auto">
+                        <!-- Imagem -->
+                        <img src="{{ url_for('static', filename='uploads/products/' + item.product.image_file) }}"
+                            onerror="this.onerror=null; this.src='https://placehold.co/80x80/1e293b/ffffff?text=Produto';"
+                            alt="{{ item.product.name }}" 
+                            class="w-20 h-20 object-cover rounded-lg border border-primary/30">
+                        
+                        <!-- Detalhes -->
+                        <div class="flex flex-col">
+                            <h3 class="text-xl text-light font-bold">{{ item.product.name }}</h3>
+                            <p class="text-light/70 text-sm">Preço Unitário: R$ {{ "%.2f"|format(item.product.price) }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Controles e Preços -->
+                    <div class="flex items-center space-x-6 mt-4 sm:mt-0 w-full sm:w-auto justify-end">
+                        
+                        <!-- Controle de Quantidade -->
+                        <form id="update-form-{{ item.product.id }}" 
+                            action="{{ url_for('update_cart_quantity', product_id=item.product.id) }}" 
+                            method="POST"
+                            class="flex items-center space-x-2">
+
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="quantity" :value="quantity">
+
+                            <button type="button" 
+                                    @click="console.log('Antes do --: quantity =', quantity); if(quantity > 1) { quantity--; console.log('Depois do --: quantity =', quantity); submitUpdate(); } else { removeItem({{ item.product.id }}); }"
+                                    class="p-2 text-primary border border-primary/50 rounded-full hover:bg-primary/10 transition"
+                                    aria-label="Diminuir Quantidade">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                            </button>
+
+                            <div class="w-12 text-center text-lg bg-dark/50 text-light border-b border-primary p-1">
+                                <span x-text="quantity"></span>
+                            </div>
+
+                            <button type="button" 
+                                    @click="console.log('Antes do ++: quantity =', quantity); quantity++; console.log('Depois do ++: quantity =', quantity); submitUpdate();"
+                                    class="p-2 text-primary border border-primary/50 rounded-full hover:bg-primary/10 transition"
+                                    aria-label="Aumentar Quantidade">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </button>
+                        </form>
+
+                        <!-- Subtotal do Item - Usa Alpine para reatividade em tempo real (mesmo que a página recarregue) -->
+                        <p class="text-xl font-orbitron font-semibold text-primary ml-4 w-28 text-right">
+                            R$ <span x-text="(price * quantity).toFixed(2)">{{ "%.2f"|format(item.product.price * item.quantity) }}</span>
+                        </p>
+
+                        <!-- Botão Remover -->
+                        <form id="remove-form-{{ item.product.id }}" 
+                            action="{{ url_for('remove_from_cart', product_id=item.product.id) }}"
+                            method="POST"
+                            class="ml-4">
+
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <button type="button" 
+                                    @click="removeItem({{ item.product.id }})"
+                                    class="p-2 text-red-500 hover:text-red-400 rounded-full hover:bg-red-500/10 transition" 
+                                    aria-label="Remover item do carrinho">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                    </path>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- COLUNA LATERAL: RESUMO E CHECKOUT -->
+            <div class="lg:col-span-1 sticky top-10">
+                <div class="bg-dark/70 border border-primary/20 rounded-xl p-6 shadow-2xl">
+                    <h3 class="text-2xl font-orbitron font-bold text-light mb-4 border-b border-primary/30 pb-3">Resumo do Pedido</h3>
+                    
+                    <div class="space-y-3 text-light/80">
+                        <div class="flex justify-between">
+                            <span>Subtotal:</span>
+                            <span class="font-semibold">R$ {{ "%.2f"|format(cart.total_price) }}</span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span>Frete:</span>
+                            <span class="font-semibold text-green-400">Grátis</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center border-t border-primary/50 pt-4 mt-4">
+                        <span class="text-xl font-bold text-light">TOTAL:</span>
+                        <span class="text-3xl font-orbitron font-bold text-primary">R$ {{ "%.2f"|format(cart.total_price) }}</span>
+                    </div>
+
+                    <a href="{{ url_for('checkout') }}" class="mt-6 block w-full text-center bg-primary hover:bg-secondary/90 text-dark font-bold py-3 rounded-full transition duration-300 transform hover:scale-[1.02]">
+                        FINALIZAR COMPRA
+                    </a>
+                    
+                    <a href="{{ url_for('loja') }}" class="mt-3 block w-full text-center text-primary border border-primary/50 py-2 rounded-full hover:bg-primary/10 transition">
+                        Continuar Comprando
+                    </a>
                 </div>
             </div>
+
         </div>
-        {% endfor %}
-    </div>
 
-    <div class="mt-8 text-right">
-        <span class="text-xl font-bold text-primary">
-            Total: R$ {{ "%.2f"|format(cart.items | sum(attribute='product.price')) }}
-        </span>
-        <button class="bg-green-600 text-dark font-bold py-2 px-4 rounded-full ml-4 hover:bg-green-500 transition">
-            Finalizar Compra
-        </button>
+        {% else %}
+        <!-- Carrinho Vazio -->
+        <div class="text-center py-20 bg-dark/50 border border-primary/20 rounded-xl">
+            <svg class="w-16 h-16 text-primary mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            <p class="text-2xl text-light/70 font-semibold mb-2">Seu carrinho de compras está vazio.</p>
+            <a href="{{ url_for('loja') }}" class="text-primary hover:text-secondary underline transition">
+                Explore nossos produtos!
+            </a>
+        </div>
+        {% endif %}
+    </section>
+    
+    <!-- Modal de Confirmação de Remoção (Substituto do confirm()) -->
+    <div x-show="showRemoveModal" class="fixed inset-0 bg-dark/80 z-50 flex items-center justify-center p-4" x-cloak>
+        <div @click.away="showRemoveModal = false" class="bg-dark border border-red-600/50 rounded-lg p-6 max-w-sm w-full shadow-2xl">
+            <h3 class="text-xl font-bold text-red-500 mb-4">Confirmação de Remoção</h3>
+            <p class="text-light mb-6">Tem certeza que deseja remover este item do carrinho?</p>
+            <div class="flex justify-end space-x-3">
+                <button @click="showRemoveModal = false" class="px-4 py-2 bg-primary/20 text-primary rounded-full hover:bg-primary/30 transition">
+                    Cancelar
+                </button>
+                <button @click="confirmRemove()" class="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition">
+                    Remover
+                </button>
+            </div>
+        </div>
     </div>
-
-    {% else %}
-    <p class="text-light/70">Seu carrinho está vazio.</p>
-    {% endif %}
-</section>
+</div>
 
 {% endblock %}
