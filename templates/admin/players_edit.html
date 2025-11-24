@@ -2,6 +2,7 @@
 {% block content %}
 <h2 class="text-2xl font-bold text-primary mb-6">Editar Player</h2>
 <form action="{{ url_for('admin_edit_player', player_id=player.id) }}" method="POST" class="space-y-4 max-w-lg" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="text" name="name" value="{{ player.name }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
     <input type="text" name="role" value="{{ player.role }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
     <input type="text" name="game" value="{{ player.game }}" class="w-full p-2 rounded bg-gray-800 text-light">

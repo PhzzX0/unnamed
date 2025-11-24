@@ -2,6 +2,7 @@
 {% block content %}
 <h2 class="text-2xl font-bold text-primary mb-6">Adicionar Parceiro/Patrocinador</h2>
 <form action="{{ url_for('admin_add_sponsor') }}" method="POST" class="space-y-4 max-w-lg" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="text" name="name" placeholder="Nome do Parceiro" class="w-full p-2 rounded bg-gray-800 text-light" required>
     
         <label for="logo_file" class="block text-light">Upload do Logo do Parceiro:</label>

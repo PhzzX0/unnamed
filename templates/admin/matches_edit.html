@@ -2,6 +2,7 @@
 {% block content %}
 <h2 class="text-2xl font-bold text-primary mb-6">Editar Partida</h2>
 <form action="{{ url_for('admin_edit_match', match_id=match.id) }}" method="POST" class="space-y-4 max-w-lg">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="text" name="tournament" value="{{ match.tournament }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
     <input type="text" name="opponent" value="{{ match.opponent }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
     <input type="date" name="date" value="{{ match.date.strftime('%Y-%m-%d') }}" class="w-full p-2 rounded bg-gray-800 text-light" required>
